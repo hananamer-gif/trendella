@@ -2,28 +2,26 @@ import React, { useState } from "react";
 
 function Trendella() {
   const products = [
-    { name: "خاتم ذهبي", price: 250, type: "خواتم", img: "https://images.unsplash.com/photo-1603808033192-082d6919d8e7" },
-    { name: "عقد فضي", price: 320, type: "عقود", img: "https://images.unsplash.com/photo-1629196900734-8b865b1cbf47" },
-    { name: "سوار لؤلؤي", price: 180, type: "أساور", img: "https://images.unsplash.com/photo-1590080875833-70c9e7e55d9b" },
-    { name: "حلق ذهبي", price: 150, type: "أقراط", img: "https://images.unsplash.com/photo-1617038260897-1d4744eaf1f4" },
-    { name: "ساعة أنيقة", price: 500, type: "ساعات", img: "https://images.unsplash.com/photo-1618378895361-370a8f9b08fa" },
-    { name: "شنطة كروس", price: 450, type: "حقائب", img: "https://images.unsplash.com/photo-1618354699071-031d3924a4a6" },
-    { name: "نظارة شمسية", price: 200, type: "نظارات", img: "https://images.unsplash.com/photo-1589571894960-20bbe2828a10" },
-    { name: "حزام جلد", price: 120, type: "أحزمة", img: "https://images.unsplash.com/photo-1624290181988-4d27f30b7f36" },
+    { name: "خاتم ذهبي", price: 250, type: "خواتم", img: "/images/ring.jpg" },
+    { name: "عقد فضي", price: 320, type: "عقود", img: "/images/necklace.jpg" },
+    { name: "سوار لؤلؤي", price: 180, type: "أساور", img: "/images/bracelet.jpg" },
+    { name: "حلق ذهبي", price: 150, type: "أقراط", img: "/images/earring.jpg" },
+    { name: "ساعة أنيقة", price: 500, type: "ساعات", img: "/images/watch.jpg" },
+    { name: "شنطة كروس", price: 450, type: "حقائب", img: "/images/bag.jpg" },
+    { name: "نظارة شمسية", price: 200, type: "نظارات", img: "/images/glasses.jpg" },
+    { name: "حزام جلد", price: 120, type: "أحزمة", img: "/images/belt.jpg" },
   ];
 
   const [cart, setCart] = useState([]);
   const [filter, setFilter] = useState("الكل");
   const [sortOrder, setSortOrder] = useState("الأحدث");
 
-  // فلترة المنتجات
   let filteredProducts = filter === "الكل" ? products : products.filter(p => p.type === filter);
 
-  // ترتيب المنتجات حسب السعر
   if (sortOrder === "الأقل سعراً") {
-    filteredProducts = [...filteredProducts].sort((a,b)=> a.price - b.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
   } else if (sortOrder === "الأعلى سعراً") {
-    filteredProducts = [...filteredProducts].sort((a,b)=> b.price - a.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
   }
 
   const addToCart = (product) => setCart([...cart, product]);
@@ -38,7 +36,6 @@ function Trendella() {
 
   return (
     <div className="bg-amber-50 min-h-screen text-gray-800">
-
       {/* شريط التنقل + السلة */}
       <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center sticky top-0 z-50">
         <h1 className="text-2xl font-bold text-amber-700">Trendella</h1>
@@ -60,7 +57,7 @@ function Trendella() {
                   <div key={i} className="flex justify-between items-center mb-1">
                     <span>{item.name}</span>
                     <span>{item.price} ج.م</span>
-                    <button onClick={()=>removeFromCart(i)} className="text-red-600 font-bold">×</button>
+                    <button onClick={() => removeFromCart(i)} className="text-red-600 font-bold">×</button>
                   </div>
                 ))}
                 <hr className="my-2" />
@@ -90,19 +87,17 @@ function Trendella() {
       <section id="shop" className="py-16 px-8 bg-white">
         <h2 className="text-3xl font-semibold text-center text-amber-700 mb-6">منتجاتنا</h2>
 
-        {/* الفلترة */}
         <div className="flex justify-center mb-4 flex-wrap gap-4">
-          {["الكل", "خواتم","عقود","أساور","أقراط","ساعات","حقائب","نظارات","أحزمة"].map(type => (
-            <button key={type} onClick={()=>setFilter(type)} className={`px-4 py-2 rounded-full ${filter===type?"bg-amber-600 text-white":"bg-amber-200 text-amber-700"} hover:bg-amber-700 hover:text-white transition`}>
+          {["الكل", "خواتم", "عقود", "أساور", "أقراط", "ساعات", "حقائب", "نظارات", "أحزمة"].map(type => (
+            <button key={type} onClick={() => setFilter(type)} className={`px-4 py-2 rounded-full ${filter === type ? "bg-amber-600 text-white" : "bg-amber-200 text-amber-700"} hover:bg-amber-700 hover:text-white transition`}>
               {type}
             </button>
           ))}
         </div>
 
-        {/* ترتيب حسب السعر */}
         <div className="flex justify-center mb-8 gap-4">
-          {["الأحدث","الأقل سعراً","الأعلى سعراً"].map(order => (
-            <button key={order} onClick={()=>setSortOrder(order)} className={`px-4 py-2 rounded-full ${sortOrder===order?"bg-amber-600 text-white":"bg-amber-200 text-amber-700"} hover:bg-amber-700 hover:text-white transition`}>
+          {["الأحدث", "الأقل سعراً", "الأعلى سعراً"].map(order => (
+            <button key={order} onClick={() => setSortOrder(order)} className={`px-4 py-2 rounded-full ${sortOrder === order ? "bg-amber-600 text-white" : "bg-amber-200 text-amber-700"} hover:bg-amber-700 hover:text-white transition`}>
               {order}
             </button>
           ))}
@@ -111,11 +106,11 @@ function Trendella() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredProducts.map((item, i) => (
             <div key={i} className="bg-amber-50 shadow rounded-2xl overflow-hidden hover:shadow-lg transition">
-              <img src={item.img} alt={item.name} className="w-full h-56 object-cover"/>
+              <img src={item.img} alt={item.name} className="w-full h-56 object-cover" />
               <div className="p-4 text-center">
                 <h4 className="text-lg font-semibold">{item.name}</h4>
                 <p className="text-amber-700 font-bold mt-2">{item.price} ج.م</p>
-                <button onClick={()=>addToCart(item)} className="mt-4 bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition">
+                <button onClick={() => addToCart(item)} className="mt-4 bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition">
                   أضف إلى السلة
                 </button>
               </div>
@@ -131,13 +126,13 @@ function Trendella() {
           <p>سلة المشتريات فارغة 😢</p>
         ) : (
           <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-            {cart.map((item,i)=>(
+            {cart.map((item, i) => (
               <div key={i} className="flex justify-between mb-2">
                 <span>{item.name}</span>
                 <span>{item.price} ج.م</span>
               </div>
             ))}
-            <hr className="my-2"/>
+            <hr className="my-2" />
             <div className="flex justify-between font-bold mb-4">
               <span>المجموع:</span>
               <span>{totalPrice} ج.م</span>
@@ -170,7 +165,6 @@ function Trendella() {
       <footer className="bg-amber-700 text-white text-center py-4 mt-10">
         © {new Date().getFullYear()} Trendella - جميع الحقوق محفوظة.
       </footer>
-
     </div>
   );
 }

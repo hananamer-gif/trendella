@@ -137,9 +137,15 @@ function Trendella() {
               <span>المجموع:</span>
               <span>{totalPrice} ج.م</span>
             </div>
-            <button className="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition">
-              دفع الآن
-            </button>
+<a 
+  href="https://paymob.xyz/ipn6kBGr/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition block"
+>
+  دفع الآن
+</a>
+
           </div>
         )}
       </section>

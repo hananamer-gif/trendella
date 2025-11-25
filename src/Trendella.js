@@ -1,48 +1,77 @@
-import React, { useState } from "react";
-
-function Trendella() {
- import { collection, getDocs } from "firebase/firestore";
+// src/Trendella.js
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
-import { useEffect } from "react";
+
+/**
+ * Trendella component
+ * - يجلب المنتجات من مجموعة "products" في Firestore
+ * - يعرض المنتجات، يدعم الفلتر والفرز
+ * - يدعم إضافة/حذف من السلة وحساب المجموع
+ *
+ * متطلبات ما قبل التشغيل:
+ * - تأكدي أن src/firebase.js موجود ويصدّر "db" (getFirestore(app))
+ * - تأكدي أن مجموعة Firestore اسمها "products" وكل مستند فيه الحقول:
+ *    name (string), price (number), type (string), img (string - رابط أو /images/xxx.jpg)
+ */
 
 function Trendella() {
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [filter, setFilter] = useState("الكل");
+  const [sortOrder, setSortOrder] = useState("الأحدث");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const querySnapshot = await getDocs(collection(db, "products"));
-      const items = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setProducts(items);
+      setLoading(true);
+      try {
+        const q = collection(db, "products");
+        const querySnapshot = await getDocs(q);
+        const items = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            // توقع الحقول: name, price, type, img
+            name: data.name || "منتج",
+            price: typeof data.price === "number" ? data.price : Number(data.price) || 0,
+            type: data.type || "عام",
+            img: data.img || "/images/placeholder.jpg", // افتراضي لو ما فيش صورة
+            description: data.description || ""
+          };
+        });
+        setProducts(items);
+      } catch (err) {
+        console.error("Error loading products from Firestore:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchProducts();
   }, []);
 
-
-  const [cart, setCart] = useState([]);
-  const [filter, setFilter] = useState("الكل");
-  const [sortOrder, setSortOrder] = useState("الأحدث");
-
+  // فلترة المنتجات
   let filteredProducts = filter === "الكل" ? products : products.filter(p => p.type === filter);
 
+  // ترتيب المنتجات حسب السعر
   if (sortOrder === "الأقل سعراً") {
     filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
   } else if (sortOrder === "الأعلى سعراً") {
     filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
   }
 
-  const addToCart = (product) => setCart([...cart, product]);
+  const addToCart = (product) => setCart(prev => [...prev, product]);
 
   const removeFromCart = (index) => {
-    const newCart = [...cart];
-    newCart.splice(index, 1);
-    setCart(newCart);
+    setCart(prev => {
+      const newCart = [...prev];
+      newCart.splice(index, 1);
+      return newCart;
+    });
   };
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+  const totalPrice = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
 
   return (
     <div className="bg-amber-50 min-h-screen text-gray-800">
@@ -113,25 +142,29 @@ function Trendella() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {filteredProducts.map((item, i) => (
-            <div key={i} className="bg-amber-50 shadow rounded-2xl overflow-hidden hover:shadow-lg transition">
-              <img src={item.img} alt={item.name} className="w-full h-56 object-cover" />
-              <div className="p-4 text-center">
-                <h4 className="text-lg font-semibold">{item.name}</h4>
-                <p className="text-amber-700 font-bold mt-2">{item.price} ج.م</p>
-                <button onClick={() => addToCart(item)} className="mt-4 bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition">
-                  أضف إلى السلة
-                </button>
+        {loading ? (
+          <div className="text-center py-20">جاري تحميل المنتجات...</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {filteredProducts.map((item, i) => (
+              <div key={item.id || i} className="bg-amber-50 shadow rounded-2xl overflow-hidden hover:shadow-lg transition">
+                <img src={item.img} alt={item.name} className="w-full h-56 object-cover" onError={(e)=> e.currentTarget.src = "/images/placeholder.jpg"} />
+                <div className="p-4 text-center">
+                  <h4 className="text-lg font-semibold">{item.name}</h4>
+                  <p className="text-amber-700 font-bold mt-2">{item.price} ج.م</p>
+                  <button onClick={() => addToCart(item)} className="mt-4 bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition">
+                    أضف إلى السلة
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* صفحة الدفع */}
       <section id="checkout" className="py-16 px-6 bg-amber-100 text-center">
-        <h3 className="text-3xl font-semibold text-amber-700 mb-6">صفحة الدفع (وهمية)</h3>
+        <h3 className="text-3xl font-semibold text-amber-700 mb-6">صفحة الدفع</h3>
         {cart.length === 0 ? (
           <p>سلة المشتريات فارغة 😢</p>
         ) : (
@@ -147,14 +180,15 @@ function Trendella() {
               <span>المجموع:</span>
               <span>{totalPrice} ج.م</span>
             </div>
-<a 
-  href="https://paymob.xyz/ipn6kBGr/"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition block"
->
-  دفع الآن
-</a>
+
+            <a 
+              href="https://paymob.xyz/ipn6kBGr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition block"
+            >
+              دفع الآن
+            </a>
 
           </div>
         )}

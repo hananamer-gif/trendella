@@ -1,16 +1,26 @@
 import React, { useState } from "react";
 
 function Trendella() {
-  const products = [
-  { name: "خاتم ذهبي", price: 250, type: "خواتم", img: process.env.PUBLIC_URL + "/images/ring.jpg" },
-  { name: "عقد فضي", price: 320, type: "عقود", img: process.env.PUBLIC_URL + "/images/necklace.jpg" },
-  { name: "سوار لؤلؤي", price: 180, type: "أساور", img: process.env.PUBLIC_URL + "/images/bracelet.jpg" },
-  { name: "حلق ذهبي", price: 150, type: "أقراط", img: process.env.PUBLIC_URL + "/images/earring.jpg" },
-  { name: "ساعة أنيقة", price: 500, type: "ساعات", img: process.env.PUBLIC_URL + "/images/watch.jpg" },
-  { name: "شنطة كروس", price: 450, type: "حقائب", img: process.env.PUBLIC_URL + "/images/bag.jpg" },
-  { name: "نظارة شمسية", price: 200, type: "نظارات", img: process.env.PUBLIC_URL + "/images/glasses.jpg" },
-  { name: "حزام جلد", price: 120, type: "أحزمة", img: process.env.PUBLIC_URL + "/images/belt.jpg" },
-];
+ import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebase";
+import { useEffect } from "react";
+
+function Trendella() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const items = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProducts(items);
+    };
+
+    fetchProducts();
+  }, []);
+
 
   const [cart, setCart] = useState([]);
   const [filter, setFilter] = useState("الكل");

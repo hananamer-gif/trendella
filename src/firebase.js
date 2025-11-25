@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBSBfwH4qeGSgpP5qDmD1rgvPzzDUYW0g",
+  apiKey: "AIzaSyBSBfwH4qeGTSgpP5qDmD1rgvPzzDUYW0g",
   authDomain: "trendella-store-38a0b.firebaseapp.com",
   projectId: "trendella-store-38a0b",
   storageBucket: "trendella-store-38a0b.firebasestorage.app",
@@ -11,6 +11,9 @@ const firebaseConfig = {
   measurementId: "G-NRWD6YV1L5"
 };
 
+// Start Firebase App
 const app = initializeApp(firebaseConfig);
 
+// Export Firestore database
 export const db = getFirestore(app);
+
